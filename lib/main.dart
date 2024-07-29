@@ -111,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  // Color picker dialog
   void _showColorPicker() {
     showDialog(
       context: context,
@@ -148,20 +149,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildMarker(Marker marker) {
     return Container(
+      key: ValueKey(marker.text),  // Add a key to each marker for ReorderableListView
       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
         color: marker.color,
         borderRadius: BorderRadius.circular(10.0),
       ),
-      child: Text(
-        marker.text,
-        style: const TextStyle(
-          fontSize: 25.0,
-          color: Colors.white, // white for contrast
-        ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            marker.text,
+            style: TextStyle(
+              fontSize: 18.0,
+              color: Colors.white, // Set text color to white for contrast
+            ),
+          ),
+          IconButton(
+            icon: Icon(Icons.close, color: Colors.white),
+            onPressed: () {
+              setState(() {
+                markers.remove(marker);
+              });
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  void _onReorder(int oldIndex, int newIndex) {
+    setState(() {
+      if (newIndex > oldIndex) {
+        newIndex -= 1;
+      }
+      final Marker item = markers.removeAt(oldIndex);
+      markers.insert(newIndex, item);
+    });
   }
 
   @override
@@ -172,17 +197,12 @@ class _MyHomePageState extends State<MyHomePage> {
         foregroundColor: Colors.white,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            const Text(
-              'Markers:',
-              style: TextStyle(fontSize: 30.0),
-            ),
-            ...markers.map((marker) => _buildMarker(marker)),
-          ],
-        ),
+      body: ReorderableListView(
+        onReorder: _onReorder,
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
+        children: <Widget>[
+          for (final marker in markers) _buildMarker(marker),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showInputDialog,
