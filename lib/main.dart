@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,6 +37,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+class Marker {
+  final String text;
+  final Color color;
+
+  Marker(this.text, this.color);
+}
+
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
 
@@ -55,9 +63,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<String> markers = [];
-  Color markerBackgroundColor = Colors.orange.shade100;
-  Color markerTextColor = Colors.black;
+  List<Marker> markers = [];
+  Color selectedColor = Colors.orange.shade100;
 
   void _showInputDialog() {
     TextEditingController textEditingController = TextEditingController();
@@ -67,9 +74,20 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Enter Data'),
-          content: TextField(
-            controller: textEditingController,
-            decoration: const InputDecoration(hintText: "Type something"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: textEditingController,
+                decoration: const InputDecoration(hintText: "Type something"),
+              ),
+              const SizedBox(height: 10),
+              // Color picker button
+              ElevatedButton(
+                onPressed: _showColorPicker,
+                child: const Text('Pick Color'),
+              ),
+            ],
           ),
           actions: <Widget>[
             TextButton(
@@ -82,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: const Text('OK'),
               onPressed: () {
                 setState(() {
-                  markers.add(textEditingController.text);
+                  markers.add(Marker(textEditingController.text, selectedColor));
                 });
                 Navigator.of(context).pop();
               },
@@ -93,19 +111,54 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _buildMarker(String marker) {
+  void _showColorPicker() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Pick a color'),
+          content: SingleChildScrollView(
+            child: BlockPicker(
+              pickerColor: selectedColor,
+              onColorChanged: (Color color) {
+                setState(() {
+                  selectedColor = color;
+                });
+              },
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('CANCEL'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('OK'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildMarker(Marker marker) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 10.0),
       padding: const EdgeInsets.all(10.0),
       decoration: BoxDecoration(
-        color: markerBackgroundColor,
+        color: marker.color,
         borderRadius: BorderRadius.circular(10.0),
       ),
       child: Text(
-        marker,
-        style: TextStyle(
-          fontSize: 18.0,
-          color: markerTextColor,
+        marker.text,
+        style: const TextStyle(
+          fontSize: 25.0,
+          color: Colors.white, // white for contrast
         ),
       ),
     );
@@ -121,13 +174,13 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
             const Text(
               'Markers:',
-              style: TextStyle(fontSize: 20.0),
+              style: TextStyle(fontSize: 30.0),
             ),
-            ...markers.map((marker) => _buildMarker(marker)).toList(),
+            ...markers.map((marker) => _buildMarker(marker)),
           ],
         ),
       ),
