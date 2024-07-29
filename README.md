@@ -1,4 +1,4 @@
-# initiative_order
+# Turn order
 
 Application to visualize the turn order in gloomhaven
 
