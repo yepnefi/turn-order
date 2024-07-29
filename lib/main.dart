@@ -73,31 +73,31 @@ class _MyHomePageState extends State<MyHomePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Enter Data'),
+          title: const Text('Marker hinzufügen'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextField(
                 controller: textEditingController,
-                decoration: const InputDecoration(hintText: "Type something"),
+                decoration: const InputDecoration(hintText: "z.b. Banditenwache"),
               ),
               const SizedBox(height: 10),
               // Color picker button
               ElevatedButton(
                 onPressed: _showColorPicker,
-                child: const Text('Pick Color'),
+                child: const Text('Marker-Farbe wählen'),
               ),
             ],
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('CANCEL'),
+              child: const Text('Zurück'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('OK'),
+              child: const Text('Ok'),
               onPressed: () {
                 setState(() {
                   markers.add(Marker(textEditingController.text, selectedColor));
@@ -111,13 +111,12 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  // Color picker dialog
   void _showColorPicker() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Pick a color'),
+          title: const Text('Wähle eine Farbe'),
           content: SingleChildScrollView(
             child: BlockPicker(
               pickerColor: selectedColor,
@@ -130,13 +129,13 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           actions: <Widget>[
             TextButton(
-              child: const Text('CANCEL'),
+              child: const Text('Zurück'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('OK'),
+              child: const Text('Ok'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -206,7 +205,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _showInputDialog,
-        tooltip: 'Add Marker',
+        tooltip: 'Marker hinzufügen',
         child: const Icon(Icons.add),
       ),
     );
